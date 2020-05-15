@@ -1,1 +1,1 @@
-export { default as Books } from './Books';
+export { default as MySnackbar } from './Snackbar';

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Books } from './pages';
+import { MySnackbar } from './pages';
 
 
 function App() {
 
     return (
       <div className="App">
-        <Books />
+        <MySnackbar />
       </div>
     );
   }

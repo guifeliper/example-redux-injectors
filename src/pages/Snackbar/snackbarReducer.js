@@ -9,10 +9,10 @@ export const initialState = {
 };
 
 
-const meetingReducer = (state = initialState, action) =>
+const snackbarReducer = (state = initialState, action) =>
   produce(state, draft => {
     switch (action.type) {
-      case 'SHOW_SNACKBAR':
+      case 'SHOW':
         draft.open = true;
         draft.message = action.payload.message;
         break;
@@ -23,5 +23,5 @@ const meetingReducer = (state = initialState, action) =>
     }
   });
 
-export default meetingReducer;
+export default snackbarReducer;
 

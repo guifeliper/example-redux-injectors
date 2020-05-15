@@ -3,7 +3,6 @@ import createSagaMiddleware from 'redux-saga';
 import { createInjectorsEnhancer } from "redux-injectors"
 
 import defaultReducer from './defaultReducer';
-// import rootSaga from './rootSaga';
 
 const staticReducers = {
   default: defaultReducer,
@@ -39,9 +38,10 @@ export default () => {
     composeEnhancers(
       applyMiddleware(sagaMiddleware),
       injectEnhancer
-    ));
+    )
+  );
       
-   store.asyncReducers = {};
+  store.asyncReducers = {};
 
   return store;
 };
