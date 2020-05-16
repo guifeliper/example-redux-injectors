@@ -1,68 +1,63 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# <img src="https://raw.githubusercontent.com/react-boilerplate/redux-injectors/3d1e0d2be038bc710c5f319ca680dd6a1e88d5e8/img/logo.svg?sanitize=true" alt="alt text" width="400"></img>
 
-## Available Scripts
+Dynamically load [redux](https://redux.js.org/) reducers and [redux-saga](https://redux-saga.js.org/) sagas as needed, instead of loading them all upfront. This has some nice benefits, such as avoiding having to manage a big global list of reducers and sagas. It also allows more effective use of [code-splitting](https://webpack.js.org/guides/code-splitting/). See [motivation](#Motivation). As used by [react-boilerplate](https://github.com/react-boilerplate/react-boilerplate).
 
-In the project directory, you can run:
+## Motivation
+My motivation to create this repository was to facilitate those that are trying to implement the redux-injectors library, but do not find a full example version. I have faced some issues to implement the library and a full example version would help me on that moment. 
 
-### `yarn start`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting Started
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+To start the project:
+```bash
+yarn start
+```
 
-### `yarn test`
+To understand the implementation go to the file configureStore.js or with the following code: 
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+const staticReducers = {
+  default: defaultReducer,
+}
 
-### `yarn build`
+function createReducer(asyncReducers) {
+  return combineReducers({
+    ...staticReducers,
+    ...asyncReducers
+  })
+}
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export default () => {
+  let composeEnhancers = compose;
+  const sagaMiddleware = createSagaMiddleware();
+  const runSaga = sagaMiddleware.run;
+  
+  // If Redux Dev Tools and Saga Dev Tools Extensions are installed, enable them
+  /* istanbul ignore next */
+  if (process.env.NODE_ENV !== 'production' && typeof window === 'object') {
+    /* eslint-disable no-underscore-dangle */
+    if (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__)
+    composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({});
+  }
+  
+  const injectEnhancer = createInjectorsEnhancer({
+    createReducer,
+    runSaga,
+  })
+  
+  const store = createStore(
+    createReducer(),
+    composeEnhancers(
+      applyMiddleware(sagaMiddleware),
+      injectEnhancer
+    )
+  );
+      
+  store.asyncReducers = {};
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+  return store;
+};
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+```
